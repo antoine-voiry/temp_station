@@ -86,7 +86,8 @@ def starting(device):
 
 		
 
-	
+if sys.version_info[0] < 3:
+    raise Exception("Python 3 or a more recent version is required.")	
 
 f_hist_temp = open_file_ensure_header(hist_temperature_file_path, 'a', csv_header_temperature)
 f_hist_hum  = open_file_ensure_header(hist_humidity_file_path, 'a', csv_header_humidity)
@@ -94,16 +95,16 @@ f_hist_hum  = open_file_ensure_header(hist_humidity_file_path, 'a', csv_header_h
 device = get_device()
 starting(device)
 
-print "Ignoring first 2 sensor values to improve quality..."
+print("Ignoring first 2 sensor values to improve quality...")
 for x in range(2):
   Adafruit_DHT.read_retry(sensor, pin)
 
-print "Creating interval timer. This step takes almost 2 minutes on the Raspberry Pi..."
+print("Creating interval timer. This step takes almost 2 minutes on the Raspberry Pi...")
 #create timer that is called every n seconds, without accumulating delays as when using sleep
 scheduler = BackgroundScheduler()
 scheduler.add_job(write_hist_value_callback, 'interval', seconds=sec_between_log_entries)
 scheduler.start()
-print "Started interval timer which will be called the first time in {0} seconds.".format(sec_between_log_entries);
+print("Started interval timer which will be called the first time in {0} seconds.".format(sec_between_log_entries))
 
 
 try:
