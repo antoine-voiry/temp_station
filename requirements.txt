@@ -1,4 +1,3 @@
-
 APScheduler==3.5.3
 argcomplete==1.9.4
 Click==7.0
@@ -16,7 +15,7 @@ keyring==10.1
 keyrings.alt==1.3
 luma.core==1.8.2
 luma.emulator==1.1.0
--e git+https://github.com/rm-hull/luma.examples.git@f8ca286fe3ba698d4e57fc89a381dc51e7eecc3f#egg=luma.examples
+Adafruit_DHT==1.4.0
 luma.lcd==1.1.0
 luma.led-matrix==1.1.1
 luma.oled==2.5.1

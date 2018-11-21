@@ -12,80 +12,143 @@ from demo_opts import get_device
 from luma.core.render import canvas
 from PIL import ImageFont
 
-
-sensor                       = Adafruit_DHT.AM2302 #DHT11/DHT22/AM2302
+# the variable name
+# the type of sensor
+sensor                       = Adafruit_DHT.AM2302 #DHT11/DHT22/AM2302 
+# the GPIO pin
 pin                          = 4
+# the name of the room monitored
 sensor_name                  = "living-room"
+# the historical temp file path
 hist_temperature_file_path   = "sensor-values/temperature_" + sensor_name + "_log_" + str(date.today().year) + ".csv"
+# the latest temp file path
 latest_temperature_file_path = "sensor-values/temperature_" + sensor_name + "_latest_value.csv"
+# the historical humidity file path
 hist_humidity_file_path      = "sensor-values/humidity_" + sensor_name + "_log_" + str(date.today().year) + ".csv"
+# the latest humidity file path
 latest_humidity_file_path    = "sensor-values/humidity_" + sensor_name + "_latest_value.csv"
+# the csv header for temp
 csv_header_temperature       = "timestamp,temperature_in_celsius\n"
+# the csv header for humidity
 csv_header_humidity          = "timestamp,relative_humidity\n"
+# the csv entry format to use to get the string
 csv_entry_format             = "{:%Y-%m-%d %H:%M:%S},{:0.1f}\n"
+# the frequency in sec
 sec_between_log_entries      = 60
+# starting value
 latest_humidity              = 0.0
 latest_temperature           = 0.0
 latest_value_datetime        = None
 
+
 def write_header(file_handle, csv_header):
-  file_handle.write(csv_header)
+   '''
+   Write the header of a file
+
+   :param file_handle: The file handle of an open file
+   :param csv_header: The csv header to write
+   '''  
+   file_handle.write(csv_header)
 
 def write_value(file_handle, datetime, value):
+  '''
+  Write value into a file a file
+
+  :param file_handle: The file handle of an open file
+  :param datetime: a datetime
+  :param value: the value to write (a string)
+  '''  
   line = csv_entry_format.format(datetime, value)
   file_handle.write(line)
   file_handle.flush()
 
+
 def open_file_ensure_header(file_path, mode, csv_header):
+  '''
+  Write value into a file a file
+  :param file_path: The path of the file to open
+  :param datetime: the mode 
+  :param value: the csv header to write 
+  :return the file hanle
+  '''    
   f = open(file_path, mode, os.O_NONBLOCK)
   if os.path.getsize(file_path) <= 0:
     write_header(f, csv_header)
   return f
 
+
 def write_hist_value_callback():
+  '''
+  Write temp and hum into hist file
+   use global variable
+   
+  '''      
   write_value(f_hist_temp, latest_value_datetime, latest_temperature)
   write_value(f_hist_hum, latest_value_datetime, latest_humidity)
 
+
+
 def write_latest_value():
+  '''
+  Write temp and hum into latest file
+   use global variable
+  
+  '''      
   with open_file_ensure_header(latest_temperature_file_path, 'w', csv_header_temperature) as f_latest_value:  #open and truncate
     write_value(f_latest_value, latest_value_datetime, latest_temperature)
   with open_file_ensure_header(latest_humidity_file_path, 'w', csv_header_humidity) as f_latest_value:  #open and truncate
     write_value(f_latest_value, latest_value_datetime, latest_humidity)
 
+
 def temperature_display():
-    return " Temp : %.2f" \
+  '''
+  get string to display temp on LCD  
+  '''      
+  return " Temp : %.2f" \
         % (latest_temperature)
 
 
 def humidity_display():
-    return " Hum : %.2f" \
+  '''
+  get string to display HUMIDITY on LCD  
+  '''        
+  return " Hum : %.2f" \
         % (latest_humidity)
 	
 def stats(device):
-    # use custom font
-    font_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
+  '''
+  WRITE THE Hum and temp on LCD  
+  :param device the lcd device
+  '''          
+   # use custom font
+  font_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                 'fonts', 'C&C Red Alert [INET].ttf'))
-    font2 = ImageFont.truetype(font_path, 14)
+  font2 = ImageFont.truetype(font_path, 14)
 
-    with canvas(device) as draw:
+  with canvas(device) as draw:
         draw.text((0, 0), " ----------------", font=font2, fill="white")
         draw.text((0, 15), temperature_display(), font=font2, fill="white")
         draw.text((0, 30), humidity_display(), font=font2, fill="white")
         draw.text((0, 45), " ---------------", font=font2, fill="white")
 
 def starting(device):
+  '''
+  WRITE THE starting message  
+  :param device the lcd device
+  '''            
     # use custom font
-    font_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
+  font_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                 'fonts', 'C&C Red Alert [INET].ttf'))
-    font2 = ImageFont.truetype(font_path, 14)
+  font2 = ImageFont.truetype(font_path, 14)
 
-    with canvas(device) as draw:
-        draw.text((0, 0),  " ------------------------", font=font2, fill="white")
-        draw.text((0, 25), " ----- Starting.. -------" , font=font2, fill="white")
-        draw.text((0, 51), " ------------------------", font=font2, fill="white")
+  with canvas(device) as draw:
+    draw.text((0, 0),  " ------------------------", font=font2, fill="white")
+    draw.text((0, 25), " ----- Starting.. -------" , font=font2, fill="white")
+    draw.text((0, 51), " ------------------------", font=font2, fill="white")
 
 		
 
+# This is the main program
 if sys.version_info[0] < 3:
     raise Exception("Python 3 or a more recent version is required.")	
 
