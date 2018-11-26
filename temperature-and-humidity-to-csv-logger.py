@@ -5,10 +5,11 @@
 # provide a link to 'http://www.home-automation-community.com/'. 
 
 #install dependency with 'sudo easy_install apscheduler' NOT with 'sudo pip install apscheduler'
-import os, sys, Adafruit_DHT, time
+import os, sys, time
+import Adafruit_DHT
 from datetime import datetime, date
 from apscheduler.schedulers.background import BackgroundScheduler
-from demo_opts import get_device
+from lcd_support import get_device
 from luma.core.render import canvas
 from PIL import ImageFont
 
@@ -21,7 +22,7 @@ pin                          = 4
 sensor_name                  = "living-room"
 # the historical temp file path
 hist_temperature_file_path   = "sensor-values/temperature_" + sensor_name + "_log_" + str(date.today().year) + ".csv"
-# the latest temp file path
+# the latest temp file path 
 latest_temperature_file_path = "sensor-values/temperature_" + sensor_name + "_latest_value.csv"
 # the historical humidity file path
 hist_humidity_file_path      = "sensor-values/humidity_" + sensor_name + "_log_" + str(date.today().year) + ".csv"
