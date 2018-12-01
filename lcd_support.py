@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2014-18 Richard Hull and contributors
 # See LICENSE.rst for details.
+# I just copied that code and renamed it
 
 import sys
 import logging
