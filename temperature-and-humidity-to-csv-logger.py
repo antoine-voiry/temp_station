@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Written by David Neuy
 # Version 0.1.0 @ 03.12.2014
 # This script was first published at: http://www.home-automation-community.com/
@@ -35,7 +37,7 @@ csv_header_temperature       = "timestamp,temperature_in_celsius\n"
 csv_header_humidity          = "timestamp,relative_humidity\n"
 # the csv entry format to use to get the string
 #csv_entry_format             = "{:%Y-%m-%d %H:%M:%S},{:0.1f}\n"
-
+TIME_FORMAT             = "{ %H:%M:%S},{:0.1f}\n"
 
 # the frequency in sec
 sec_between_log_entries      = 60
@@ -51,7 +53,7 @@ def temperature_display():
   '''
   get string to display temp on LCD  
   '''      
-  return " Temp : %.2f" \
+  return "    Temperature : %.2f" \
         % (latest_temperature)
 
 
@@ -59,8 +61,15 @@ def humidity_display():
   '''
   get string to display HUMIDITY on LCD  
   '''        
-  return " Hum : %.2f" \
+  return "    Humidity : %.2f" \
         % (latest_humidity)
+
+def time_display():
+  '''
+  get string to display HUMIDITY on LCD  
+  '''        
+  return "    time : %s" \
+        % (datetime.now().strftime("%H:%M:%S"))
 	
 def stats(device):
   '''
@@ -69,14 +78,15 @@ def stats(device):
   '''          
    # use custom font
   font_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                'fonts', 'C&C Red Alert [INET].ttf'))
-  font2 = ImageFont.truetype(font_path, 14)
+                                'fonts', 'FreePixel.ttf'))
+  font2 = ImageFont.truetype(font_path, 9)
 
   with canvas(device) as draw:
-        draw.text((0, 0), " ----------------", font=font2, fill="white")
+        draw.text((8, 0), " --------------------", font=font2, fill="white")
         draw.text((0, 15), temperature_display(), font=font2, fill="white")
-        draw.text((0, 30), humidity_display(), font=font2, fill="white")
-        draw.text((0, 45), " ---------------", font=font2, fill="white")
+        draw.text((0, 25), humidity_display(), font=font2, fill="white")
+        draw.text((0, 35), time_display(), font=font2, fill="white")
+        draw.text((8, 45), " -------------------", font=font2, fill="white")
 
 def starting(device):
   '''
@@ -90,7 +100,7 @@ def starting(device):
 
   with canvas(device) as draw:
     draw.text((0, 0),  " ------------------------", font=font2, fill="white")
-    draw.text((0, 25), " ----- Starting.. -------" , font=font2, fill="white")
+    draw.text((3, 25), " ----- Starting.. -------" , font=font2, fill="white")
     draw.text((0, 51), " ------------------------", font=font2, fill="white")
 
 		
@@ -101,13 +111,14 @@ if sys.version_info[0] < 3:
 
 f_hist_temp = open_file_ensure_header(hist_temperature_file_path, 'a', csv_header_temperature)
 f_hist_hum  = open_file_ensure_header(hist_humidity_file_path, 'a', csv_header_humidity)
-
+print("STARTING")
 device = get_device()
+print("STARTING device")
 starting(device)
 
 print("Ignoring first 2 sensor values to improve quality...")
 for x in range(2):
-  Adafruit_DHT.read_retry(SENSOR_TYPE, SENSOR_NAME)
+  Adafruit_DHT.read_retry(SENSOR_TYPE, PIN_HUM_TEMP_SENSOR)
 
 print("Creating interval timer. This step takes almost 2 minutes on the Raspberry Pi...")
 #create timer that is called every n seconds, without accumulating delays as when using sleep

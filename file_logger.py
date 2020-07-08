@@ -51,10 +51,13 @@ def write_hist_value_callback(f_hist_temp,f_hist_hum,latest_value_datetime, late
   Write temp and hum into hist file
    use global variable
    
-  '''      
-  write_value(f_hist_temp, latest_value_datetime, latest_temperature)
-  write_value(f_hist_hum, latest_value_datetime, latest_humidity)
-
+  '''   
+  with open_file_ensure_header(f_hist_temp, 'a', CSV_HEADER_TEMPERATURE) as f_hist_temp_f:  #open and truncate
+    write_value(f_hist_temp_f, latest_value_datetime, latest_temperature)
+    f_hist_temp_f.close()
+  with open_file_ensure_header(f_hist_hum, 'a', CSV_HEADER_HUMIDITY) as f_hist_hum_f:  #open and truncate
+    write_value(f_hist_hum_f, latest_value_datetime, latest_humidity)
+    f_hist_hum_f.close()
 
 
 def write_latest_value(latest_temperature_file_path,latest_humidity_file_path,latest_value_datetime,latest_temperature, latest_humidity):
